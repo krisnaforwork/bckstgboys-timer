@@ -1,32 +1,12 @@
 {
-  "name": "bckstgboys-timer",
-  "productName": "BCKSTGBOYS TIMER",
+  "name": "bckstg-timer-server",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "server.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder"
+    "start": "node server.js"
   },
-  "build": {
-    "appId": "com.bckstgboys.timer",
-    "productName": "BCKSTGBOYS TIMER",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      "index.html"
-    ],
-    "win": {
-      "target": [
-        "nsis",
-        "portable"
-      ],
-      "icon": "icon.ico",
-      "artifactName": "${BCKSTGBOYS TIMER}.${ext}"
-    },
-    "nsis": {
-      "artifactName": "${BCKSTGBOYS TIMER} Installer.${ext}"
-    }
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   }
 }
