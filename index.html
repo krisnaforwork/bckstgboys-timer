@@ -530,12 +530,14 @@
             padding: 30px 40px;
             border: 1px solid var(--border-glass);
             min-height: 500px;
+            width: 100%;
         }
 
         main.mode-display .speaker-display {
             height: 100vh;
             border-radius: 0;
             border: none;
+            width: 100vw;
         }
 
         /* Background Media (Foto / Video) */
@@ -599,7 +601,7 @@
             letter-spacing: 2px;
             color: #ffffff;
             text-transform: uppercase;
-            opacity: 0.45; /* Semi-transparan agar elegan dan tidak mengganggu pandangan */
+            opacity: 0.45;
             white-space: nowrap;
         }
 
@@ -1221,46 +1223,49 @@
         const summaryEndOfShow = document.getElementById('summaryEndOfShow');
         const summaryEstimated = document.getElementById('summaryEstimated');
 
-        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser dengan parameter ?mode=display, langsung ubah ke mode display
+        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser (?mode=display), langsung ubah ke mode display
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('mode') === 'display') {
                 if (appHeader) appHeader.style.display = 'none';
-                switchView('display', null);
+                mainContainer.className = "mode-display";
+                if (controllerPanel) controllerPanel.style.display = 'none';
             }
+            loadSettingsFromStorage();
         });
 
         function applySettingsLive() {
-            // Warna
             const tColor = document.getElementById('pickerTitleColor').value;
             const timerColor = document.getElementById('pickerTimerColor').value;
             const mColor = document.getElementById('pickerMessageColor').value;
-            document.documentElement.style.setProperty('--display-title-color', tColor);
-            document.documentElement.style.setProperty('--display-timer-color', timerColor);
-            document.documentElement.style.setProperty('--display-message-color', mColor);
-
-            // Ukuran Font Pesan
             const msgSize = document.getElementById('rangeMsgSize').value + 'px';
             document.getElementById('valMsgSize').innerText = msgSize;
-            document.documentElement.style.setProperty('--display-message-size', msgSize);
+            
+            const tFont = document.getElementById('selectTitleFont').value;
+            const timerFont = document.getElementById('selectTimerFont').value;
+            const msgFont = document.getElementById('selectMessageFont').value;
 
-            // Jenis Font
-            document.documentElement.style.setProperty('--active-title-font', document.getElementById('selectTitleFont').value);
-            document.documentElement.style.setProperty('--active-timer-font', document.getElementById('selectTimerFont').value);
-            document.documentElement.style.setProperty('--active-message-font', document.getElementById('selectMessageFont').value);
-
-            // Spacing
             const tSpace = document.getElementById('rangeSpaceTitleTimer').value + 'px';
             const mSpace = document.getElementById('rangeSpaceTimerMsg').value + 'px';
             document.getElementById('valSpaceTitleTimer').innerText = tSpace;
             document.getElementById('valSpaceTimerMsg').innerText = mSpace;
+
+            const logoUrl = document.getElementById('inputLogoUrl').value.trim();
+            const logoPos = document.getElementById('selectLogoPos').value;
+            const bgUrl = document.getElementById('inputBgUrl').value.trim();
+
+            // Set ke Root CSS
+            document.documentElement.style.setProperty('--display-title-color', tColor);
+            document.documentElement.style.setProperty('--display-timer-color', timerColor);
+            document.documentElement.style.setProperty('--display-message-color', mColor);
+            document.documentElement.style.setProperty('--display-message-size', msgSize);
+            document.documentElement.style.setProperty('--active-title-font', tFont);
+            document.documentElement.style.setProperty('--active-timer-font', timerFont);
+            document.documentElement.style.setProperty('--active-message-font', msgFont);
             document.documentElement.style.setProperty('--spacing-title-timer', tSpace);
             document.documentElement.style.setProperty('--spacing-timer-message', mSpace);
 
-            // Logo & Posisi
-            const logoUrl = document.getElementById('inputLogoUrl').value.trim();
-            const logoPos = document.getElementById('selectLogoPos').value;
-
+            // Terapkan Logo
             logoLeft.style.display = 'none';
             logoTopCenter.style.display = 'none';
             headerRightZone.innerHTML = '<span class="small-app-title">BCKSTGBOYS TIMER</span>';
@@ -1277,8 +1282,7 @@
                 }
             }
 
-            // Background Media (Foto / Video)
-            const bgUrl = document.getElementById('inputBgUrl').value.trim();
+            // Terapkan Background
             displayBgImage.style.display = 'none';
             displayBgVideo.style.display = 'none';
             if (bgUrl) {
@@ -1292,6 +1296,48 @@
             }
         }
 
+        function saveGlobalSettings() {
+            const settingsData = {
+                titleColor: document.getElementById('pickerTitleColor').value,
+                timerColor: document.getElementById('pickerTimerColor').value,
+                msgColor: document.getElementById('pickerMessageColor').value,
+                msgSize: document.getElementById('rangeMsgSize').value,
+                titleFont: document.getElementById('selectTitleFont').value,
+                timerFont: document.getElementById('selectTimerFont').value,
+                msgFont: document.getElementById('selectMessageFont').value,
+                logoUrl: document.getElementById('inputLogoUrl').value,
+                logoPos: document.getElementById('selectLogoPos').value,
+                bgUrl: document.getElementById('inputBgUrl').value,
+                spaceTitleTimer: document.getElementById('rangeSpaceTitleTimer').value,
+                spaceTimerMsg: document.getElementById('rangeSpaceTimerMsg').value
+            };
+            localStorage.setItem('bckstg_settings', JSON.stringify(settingsData));
+            applySettingsLive();
+            closeSettingsModal();
+        }
+
+        function loadSettingsFromStorage() {
+            const saved = localStorage.getItem('bckstg_settings');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if(data.titleColor) document.getElementById('pickerTitleColor').value = data.titleColor;
+                    if(data.timerColor) document.getElementById('pickerTimerColor').value = data.timerColor;
+                    if(data.msgColor) document.getElementById('pickerMessageColor').value = data.msgColor;
+                    if(data.msgSize) document.getElementById('rangeMsgSize').value = data.msgSize;
+                    if(data.titleFont) document.getElementById('selectTitleFont').value = data.titleFont;
+                    if(data.timerFont) document.getElementById('selectTimerFont').value = data.timerFont;
+                    if(data.msgFont) document.getElementById('selectMessageFont').value = data.msgFont;
+                    if(data.logoUrl) document.getElementById('inputLogoUrl').value = data.logoUrl;
+                    if(data.logoPos) document.getElementById('selectLogoPos').value = data.logoPos;
+                    if(data.bgUrl) document.getElementById('inputBgUrl').value = data.bgUrl;
+                    if(data.spaceTitleTimer) document.getElementById('rangeSpaceTitleTimer').value = data.spaceTitleTimer;
+                    if(data.spaceTimerMsg) document.getElementById('rangeSpaceTimerMsg').value = data.spaceTimerMsg;
+                    applySettingsLive();
+                } catch(e){}
+            }
+        }
+
         function updateCharCounter() {
             if (inputMessageArea.value.length > 300) {
                 inputMessageArea.value = inputMessageArea.value.substring(0, 300);
@@ -1300,17 +1346,9 @@
         }
         updateCharCounter();
 
-        function openOutputModal() {
-            openOutputModalEl.classList.add('active');
-        }
-
-        function closeOutputModal() {
-            openOutputModalEl.classList.remove('active');
-        }
-
-        function getOutputUrl() {
-            return PUBLIC_BASE_URL + "?mode=display";
-        }
+        function openOutputModal() { openOutputModalEl.classList.add('active'); }
+        function closeOutputModal() { openOutputModalEl.classList.remove('active'); }
+        function getOutputUrl() { return PUBLIC_BASE_URL + "?mode=display"; }
 
         function copyOutputLink() {
             navigator.clipboard.writeText(getOutputUrl()).then(() => {
@@ -1326,11 +1364,6 @@
 
         function openSettingsModal() { settingsModal.classList.add('active'); }
         function closeSettingsModal() { settingsModal.classList.remove('active'); }
-
-        function saveGlobalSettings() {
-            applySettingsLive();
-            closeSettingsModal();
-        }
 
         function toggleAudioSound() {
             isAudioEnabled = !isAudioEnabled;
