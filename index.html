@@ -1240,10 +1240,11 @@
         const summaryEndOfShow = document.getElementById('summaryEndOfShow');
         const summaryEstimated = document.getElementById('summaryEstimated');
 
-        // DETEKSI MODE: Jika dibuka sebagai output browser (?mode=display), langsung ubah ke mode display
+        const isDisplayMode = new URLSearchParams(window.location.search).get('mode') === 'display';
+
+        // DETEKSI MODE OUTPUT
         window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('mode') === 'display') {
+            if (isDisplayMode) {
                 if (appHeader) appHeader.style.display = 'none';
                 mainContainer.className = "mode-display";
                 if (controllerPanel) controllerPanel.style.display = 'none';
@@ -1251,8 +1252,9 @@
             loadSettingsFromStorage();
         });
 
-        // Broadcast State antar Tab/Browser secara Real-Time
+        // Broadcast & Polling Sync (Mendukung Real-Time antar Tab Output)
         function broadcastState() {
+            if (isDisplayMode) return; // Tab display hanya menerima, tidak mengirim balik
             const state = {
                 rundownTimers,
                 activeTimerId,
@@ -1291,6 +1293,16 @@
             }
         });
 
+        // Polling otomatis setiap 200ms khusus untuk tab display agar sinkron mutlak
+        if (isDisplayMode) {
+            setInterval(() => {
+                const raw = localStorage.getItem('bckstg_live_sync');
+                if (raw) {
+                    try { applySyncedState(JSON.parse(raw)); } catch(e){}
+                }
+            }, 200);
+        }
+
         function applySyncedState(data) {
             if (!data) return;
             rundownTimers = data.rundownTimers;
@@ -1318,7 +1330,9 @@
                 applySettingsLive();
             }
 
-            renderRundown();
+            if (!isDisplayMode) renderRundown();
+            updateActiveDisplay();
+
             if (isBannerVisible) {
                 showBanner(data.bannerText, false);
             } else {
@@ -1543,6 +1557,7 @@
         }
 
         function renderRundown() {
+            if (isDisplayMode) return;
             rundownContainer.innerHTML = '';
             rundownTimers.forEach((timer, idx) => {
                 const isActive = timer.id === activeTimerId;
@@ -1691,6 +1706,7 @@
         }
 
         function renderBanners() {
+            if (isDisplayMode) return;
             presetBannerList.innerHTML = '';
             savedBanners.forEach((msg, idx) => {
                 const div = document.createElement('div');
@@ -1718,8 +1734,10 @@
 
         function showBanner(msg, isFlashing = false) {
             isBannerVisible = true;
-            btnToggleShowBanner.innerHTML = '● Hide';
-            btnToggleShowBanner.className = 'btn btn-danger btn-xs';
+            if (!isDisplayMode) {
+                btnToggleShowBanner.innerHTML = '● Hide';
+                btnToggleShowBanner.className = 'btn btn-danger btn-xs';
+            }
 
             if (focusModeCheckbox.checked) {
                 timerDisplay.style.display = 'none';
@@ -1744,8 +1762,10 @@
             lowerThirdBanner.classList.remove('active', 'flashing');
             centerFocusMessage.classList.remove('active', 'flashing');
             isBannerVisible = false;
-            btnToggleShowBanner.innerHTML = '● Show';
-            btnToggleShowBanner.className = 'btn btn-success btn-xs';
+            if (!isDisplayMode) {
+                btnToggleShowBanner.innerHTML = '● Show';
+                btnToggleShowBanner.className = 'btn btn-success btn-xs';
+            }
             timerDisplay.style.display = 'block';
             todDisplay.style.display = 'block';
             broadcastState();
