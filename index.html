@@ -1075,11 +1075,11 @@
         const summaryEndOfShow = document.getElementById('summaryEndOfShow');
         const summaryEstimated = document.getElementById('summaryEstimated');
 
-        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser, langsung ubah ke mode display & sembunyikan kontrol
+        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser dengan parameter ?mode=display, langsung ubah ke mode display & sembunyikan kontrol
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('mode') === 'display') {
-                appHeader.style.display = 'none';
+                if (appHeader) appHeader.style.display = 'none';
                 switchView('display', null);
             }
         });
