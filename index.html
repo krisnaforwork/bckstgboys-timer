@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCKSTGBOYS TIMER - OUTPUT</title>
+
+    <style>
+        @font-face {
+            font-family: 'Futura Bold';
+            src: url('./fonts/Futura-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        :root {
+            --accent-gold: #d4af37;
+            --accent-gold-glow: rgba(212, 175, 55, 0.4);
+            
+            --accent-neon-green: #39ff14;
+            --accent-neon-green-glow: rgba(57, 255, 20, 0.6);
+
+            --accent-cyan: #00f0ff;
+            --accent-cyan-glow: rgba(0, 240, 255, 0.3);
+            
+            --accent-emerald: #10b981;
+            --accent-emerald-glow: rgba(16, 185, 129, 0.3);
+
+            --accent-ruby: #f43f5e;
+            --accent-ruby-glow: rgba(244, 63, 94, 0.3);
+
+            --accent-purple: #a855f7;
+            --accent-purple-glow: rgba(168, 85, 247, 0.3);
+
+            --primary: var(--accent-gold);
+            --primary-glow: var(--accent-gold-glow);
+
+            --bg-obsidian: #090a0f;
+            --bg-card: rgba(18, 20, 29, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            
+            --status-green: #10b981;
+            --status-yellow: #f59e0b;
+            --status-red: #ef4444;
+
+            --display-title-color: #ffffff;
+            --display-timer-color: #10b981;
+            --display-message-color: #ffffff;
+            --display-message-size: 24px;
+
+            --spacing-title-timer: 20px;
+            --spacing-timer-message: 20px;
+
+            --font-futura: 'Futura Bold', 'Outfit', system-ui, sans-serif;
+            --font-calibri: 'Calibri', 'Candara', Segoe, sans-serif;
+            --font-anton: 'Impact', 'Arial Black', sans-serif;
+            --font-arial-black: 'Arial Black', Gadget, sans-serif;
+            --font-axentro: 'Century Gothic', sans-serif;
+            --font-bebas: 'Impact', 'Trebuchet MS', sans-serif;
+            --font-beonco: 'Courier New', monospace;
+            --font-times: 'Times New Roman', Times, serif;
+            --font-old-london: 'Georgia', serif;
+            --font-space: system-ui, -apple-system, sans-serif;
+            
+            --active-timer-font: var(--font-futura);
+            --active-title-font: var(--font-futura);
+            --active-message-font: var(--font-futura);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-obsidian);
+            color: #f3f4f6;
+            font-family: var(--font-space);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        header {
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(9, 10, 15, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+        }
+
+        .brand-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-family: var(--font-futura);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .brand-tagline {
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .view-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .view-btn {
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        main {
+            flex: 1;
+            padding: 24px;
+            display: grid;
+            gap: 24px;
+            transition: all 0.3s ease;
+        }
+
+        main.mode-controller {
+            grid-template-columns: 1fr;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        main.mode-split {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        main.mode-display {
+            padding: 0;
+            grid-template-columns: 1fr;
+        }
+
+        .controller-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 10px var(--primary-glow); }
+        .btn-primary:hover { box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+        .btn-success { background: var(--status-green); color: #000; }
+        .btn-warning { background: var(--status-yellow); color: #000; }
+        .btn-danger { background: var(--status-red); color: #fff; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid var(--border-glass); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.18); }
+
+        .btn-toggle-active {
+            background: var(--status-green) !important;
+            color: #000 !important;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        input[type="text"], input[type="number"], select, textarea, input[type="range"], input[type="file"] {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-glass);
+            padding: 9px 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary);
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #000;
+            margin-right: 10px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: 1px solid var(--border-glass);
+            width: 100%;
+            height: 42px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            padding: 4px;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+        }
+
+        .rundown-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .rundown-row {
+            display: grid;
+            grid-template-columns: 35px 85px 75px 1fr auto;
+            align-items: center;
+            background: rgba(25, 28, 38, 0.9);
+            border: 1px solid var(--border-glass);
+            padding: 8px 12px;
+            border-radius: 10px;
+            gap: 10px;
+        }
+
+        .rundown-row.active-rundown {
+            background: #1e3a8a;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .rundown-index {
+            font-weight: 700;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .rundown-start-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            color: #d1d5db;
+            font-size: 0.75rem;
+            padding: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .rundown-time {
+            font-family: var(--active-timer-font);
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .rundown-title-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            outline: none;
+        }
+
+        .rundown-actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-rundown-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .btn-rundown-play { background: var(--status-green); color: #000; font-weight: bold; }
+
+        .show-summary-card {
+            background: rgba(15, 17, 23, 0.95);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-label {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: #fff;
+            font-family: var(--active-timer-font);
+        }
+
+        .status-tag-on-time { color: var(--status-green); background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; }
+        .status-tag-over { color: var(--status-red); background: rgba(239, 68, 68, 0.15); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; }
+        .status-tag-under { color: var(--status-yellow); background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; }
+
+        .preview-monitor-card {
+            background: #000;
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+        .preview-header-title {
+            font-family: var(--active-title-font);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--display-title-color);
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .preview-timer-digits {
+            font-family: var(--active-timer-font);
+            font-size: clamp(2.8rem, 5vw, 4.2rem);
+            font-weight: 700;
+            line-height: 1;
+            color: var(--display-timer-color);
+            font-variant-numeric: tabular-nums;
+            margin: 2px 0;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--display-timer-color);
+            transition: width 1s linear;
+        }
+
+        .status-badge-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .on-air-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #6b7280;
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .on-air-badge.active {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--status-red);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .dot-indicator {
+            width: 6px; height: 6px; border-radius: 50%; background: #6b7280;
+        }
+        .on-air-badge.active .dot-indicator {
+            background: var(--status-red);
+            box-shadow: 0 0 6px var(--status-red);
+        }
+
+        .message-input-card {
+            background: rgba(12, 13, 18, 0.9);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message-textarea {
+            width: 100%;
+            min-height: 55px;
+            resize: vertical;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+
+        .message-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* SPEAKER DISPLAY UTAMA */
+        .speaker-display {
+            position: relative;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 40px;
+            border: 1px solid var(--border-glass);
+            min-height: 500px;
+            width: 100%;
+        }
+
+        main.mode-display .speaker-display {
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+            width: 100vw;
+        }
+
+        /* Background Media (Foto / Video) */
+        .bg-media-el {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0.35;
+        }
+
+        /* Header Display */
+        .speaker-header {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+        }
+
+        .speaker-header-left {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .speaker-header-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        /* Watermark dikunci di pojok kanan atas secara mutlak */
+        .speaker-header-right {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            z-index: 25;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: none;
+        }
+
+        .center-stage-title {
+            font-family: var(--active-title-font);
+            font-size: clamp(1.4rem, 2.8vw, 2.4rem);
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--display-title-color);
+            text-transform: uppercase;
+        }
+
+        .small-app-title {
+            font-family: var(--font-futura);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
+            opacity: 0.45;
+            white-space: nowrap;
+        }
+
+        .custom-logo-display {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .timer-center-stage {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: auto 0;
+            gap: var(--spacing-title-timer);
+        }
+
+        .main-timer-digits {
+            font-family: var(--active-timer-font);
+            font-size: min(16vw, 14rem);
+            font-weight: 700;
+            line-height: 0.95;
+            letter-spacing: -2px;
+            color: var(--display-timer-color);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .main-timer-digits.status-warning {
+            color: #f97316 !important;
+            text-shadow: 0 0 25px rgba(249, 115, 22, 0.5);
+        }
+
+        .main-timer-digits.status-danger {
+            color: #ef4444 !important;
+            text-shadow: 0 0 35px rgba(239, 68, 68, 0.8);
+            animation: timer-flash-glow 0.6s infinite alternate;
+        }
+
+        @keyframes timer-flash-glow {
+            0% { opacity: 0.35; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .tod-clock-display {
+            font-size: clamp(1.2rem, 2.5vw, 2rem);
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: var(--spacing-timer-message);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 24px;
+            border-radius: 50px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .lower-third-banner {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            background: transparent;
+            color: var(--display-message-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: var(--active-message-font);
+            font-size: var(--display-message-size);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transform: translateY(150%);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            margin-top: var(--spacing-timer-message);
+        }
+
+        .lower-third-banner.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .center-focus-message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            max-height: 80vh;
+            overflow: hidden;
+            text-align: center;
+            font-family: var(--active-message-font);
+            font-size: var(--display-message-size);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--display-message-color);
+            z-index: 25;
+            padding: 10px;
+        }
+
+        .center-focus-message.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .center-focus-message.flashing, .lower-third-banner.flashing {
+            animation: flash-blink-pure 0.45s infinite alternate ease-in-out;
+        }
+
+        @keyframes flash-blink-pure {
+            0% { opacity: 0.1; }
+            100% { opacity: 1; }
+        }
+
+        .preset-banner-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 110px;
+            overflow-y: auto;
+            margin-top: 8px;
+            padding-right: 4px;
+        }
+
+        .preset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-modal {
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 1.4rem;
+        }
+
+        .setting-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 16px;
+        }
+
+        .output-modal-card {
+            width: 90%;
+            max-width: 520px;
+            background: #18191e;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+            color: #fff;
+        }
+
+        .output-action-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .output-btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .output-btn-action:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #fff;
+        }
+
+        .output-viewer-box {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .icon-svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER (Hanya Tampil Jika Bukan Mode Output Browser) -->
+    <header id="appHeader">
+        <div class="brand-logo-container">
+            <svg class="icon-svg" style="color: var(--primary); width:22px; height:22px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div class="brand-logo-text">
+                <span class="brand-title">BCKSTGBOYS TIMER</span>
+                <span class="brand-tagline">NO DELAY JUST PLAY</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="openOutputModal()">
+                <svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Open Output
+            </button>
+
+            <div class="view-switcher">
+                <button class="view-btn active" onclick="switchView('split', this)">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/></svg> Split
+                </button>
+                <button class="view-btn" onclick="switchView('controller', this)">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg> Controller
+                </button>
+                <button class="view-btn" onclick="switchView('display', this)">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg> Performer Display
+                </button>
+            </div>
+            <button class="btn btn-secondary" onclick="openSettingsModal()"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
+        </div>
+    </header>
+
+    <main class="mode-split" id="mainContainer">
+        
+        <div class="controller-panel glass-panel" id="controllerPanel" style="padding: 18px;">
+            
+            <div class="preview-monitor-card">
+                <div class="preview-header-title" id="previewTitle">TIMER 1</div>
+                <div class="preview-timer-digits" id="previewTimerDisplay">10:00</div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+
+                <div class="status-badge-bar">
+                    <div class="on-air-badge" id="onAirBadge">
+                        <div class="dot-indicator"></div> ON AIR
+                    </div>
+                    <div style="font-size: 0.75rem; font-weight: 600; color: #9ca3af;" id="previewSubClock">10:00.0</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">
+                    <span>Rundown Timers (Max 10)</span>
+                    <button class="btn btn-primary btn-xs" onclick="addRundownTimer()"><svg class="icon-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Timer</button>
+                </div>
+                
+                <div class="rundown-container" id="rundownContainer"></div>
+            </div>
+
+            <div class="show-summary-card">
+                <div class="summary-row">
+                    <div class="summary-label">Current TOD Time</div>
+                    <div class="summary-value" id="summaryCurrentTime">00:00:00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Over / Under</div>
+                    <div><span class="status-tag-on-time" id="summaryOverUnder">ON TIME</span></div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">End of Show</div>
+                    <div class="summary-value" id="summaryEndOfShow">--:--:--</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Estimated Finish</div>
+                    <div class="summary-value" id="summaryEstimated">--:--:--</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title"><span>Master Playback Controls</span></div>
+                <div class="controls-grid" style="margin-bottom: 8px;">
+                    <button class="btn btn-success" onclick="startActiveTimer()">START</button>
+                    <button class="btn btn-warning" onclick="pauseActiveTimer()">PAUSE</button>
+                    <button class="btn btn-danger" onclick="resetActiveTimer()">RESET</button>
+                    <button class="btn btn-secondary btn-toggle-active" id="btnAudioToggle" onclick="toggleAudioSound()">SOUND: ON</button>
+                </div>
+                <div class="controls-grid">
+                    <button class="btn btn-secondary" onclick="addTime(-300)">-5m</button>
+                    <button class="btn btn-secondary" onclick="addTime(-180)">-3m</button>
+                    <button class="btn btn-secondary" onclick="addTime(-60)">-1m</button>
+                    <button class="btn btn-secondary" onclick="addTime(60)">+1m</button>
+                    <button class="btn btn-secondary" onclick="addTime(180)">+3m</button>
+                    <button class="btn btn-secondary" onclick="addTime(300)">+5m</button>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--border-glass);">
+
+            <div>
+                <div class="section-title"><span>Messages & Focus Mode (Maks. 300 Huruf)</span></div>
+
+                <div class="message-input-card">
+                    <textarea id="inputMessageArea" class="message-textarea" maxlength="300" placeholder="Enter message (maksimal 300 huruf) ..." oninput="updateCharCounter()"></textarea>
+                    <div class="char-counter" id="charCounter">0 / 300 huruf</div>
+                    
+                    <div class="form-group" style="margin-bottom: 6px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer; color: #d1d5db;">
+                            <input type="checkbox" id="focusModeCheckbox" style="width: 15px; height: 15px; accent-color: var(--primary);" onchange="broadcastState()">
+                            Focus Message Only (Pindah ke Tengah Layar & Auto-Hide Timer)
+                        </label>
+                    </div>
+
+                    <div class="message-toolbar">
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary btn-xs" onclick="saveCurrentMessage()">Save</button>
+                            <button class="btn btn-warning btn-xs" onclick="flashBlinkMessage()">Flash & Blink</button>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-success btn-xs" id="btnToggleShowBanner" onclick="toggleShowMessage()">● Show</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preset-banner-list" id="presetBannerList"></div>
+            </div>
+
+        </div>
+
+        <!-- SPEAKER DISPLAY -->
+        <div class="speaker-display" id="speakerDisplay">
+            <!-- Background Media (Foto / Video) -->
+            <img src="" id="displayBgImage" class="bg-media-el" style="display: none;">
+            <video src="" id="displayBgVideo" class="bg-media-el" autoplay muted loop style="display: none;"></video>
+
+            <!-- Watermark Dikunci di Pojok Paling Kanan Layar Display -->
+            <div class="speaker-header-right" id="headerRightZone">
+                <span class="small-app-title">BCKSTGBOYS TIMER</span>
+            </div>
+
+            <div class="speaker-header">
+                <div class="speaker-header-left" id="headerLeftZone">
+                    <!-- Logo Posisi: Kiri Atas -->
+                    <img src="" id="logoLeft" class="custom-logo-display" style="display: none;">
+                </div>
+                <div class="speaker-header-center" id="headerCenterZone">
+                    <!-- Logo Posisi: Tengah Atas (Di atas Title) -->
+                    <img src="" id="logoTopCenter" class="custom-logo-display" style="display: none; margin-bottom: 6px;">
+                    <div class="center-stage-title" id="displayCenterTitle">TIMER 1</div>
+                </div>
+                <div style="width: 0px;"></div>
+            </div>
+
+            <div class="timer-center-stage" id="timerCenterStage">
+                <div class="main-timer-digits" id="timerDisplay">10:00</div>
+                <div class="tod-clock-display" id="todDisplay">TOD: 00:00:00 AM</div>
+                <div class="center-focus-message" id="centerFocusMessage">PESAN PENTING</div>
+            </div>
+
+            <div class="lower-third-banner" id="lowerThirdBanner">PESAN BAWAH</div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL OPEN OUTPUT -->
+    <div class="modal-overlay" id="openOutputModal">
+        <div class="output-modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg class="icon-svg" style="width:20px; height:20px;" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Open Output
+                </div>
+                <button class="close-btn" onclick="closeOutputModal()">&times;</button>
+            </div>
+
+            <div class="output-action-grid">
+                <button class="output-btn-action" onclick="copyOutputLink()">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span id="copyBtnText">Copy Link Output</span>
+                </button>
+                <button class="output-btn-action" onclick="openOutputInBrowser()">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Open in Browser
+                </button>
+            </div>
+
+            <div style="font-size: 0.8rem; color: #d1d5db; margin-bottom: 8px; font-weight: 500;">
+                Show <strong>Viewer</strong> on connected screen:
+            </div>
+            <div class="output-viewer-box">
+                Open an output link on a device to see it here.
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL SETTINGS MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="settings-modal glass-panel" id="settingsModalForm">
+            <div class="modal-header">
+                <div class="modal-title">Global Application Settings</div>
+                <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
+            </div>
+
+            <!-- 1. Warna & Ukuran Font -->
+            <div class="setting-section">
+                <div class="section-title">🎨 Warna & Ukuran Tampilan</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Warna Title</label>
+                        <input type="color" id="pickerTitleColor" value="#ffffff" oninput="applySettingsLive(); broadcastState();">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Warna Timer</label>
+                        <input type="color" id="pickerTimerColor" value="#10b981" oninput="applySettingsLive(); broadcastState();">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Warna Pesan</label>
+                        <input type="color" id="pickerMessageColor" value="#ffffff" oninput="applySettingsLive(); broadcastState();">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ukuran Font Pesan (10px - 42px): <span id="valMsgSize">24px</span></label>
+                    <input type="range" id="rangeMsgSize" min="10" max="42" value="24" oninput="applySettingsLive(); broadcastState();">
+                </div>
+            </div>
+
+            <!-- 2. Pemilihan Jenis Font -->
+            <div class="setting-section">
+                <div class="section-title">🔤 Pilihan Jenis Font</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label">Font Title</label>
+                        <select id="selectTitleFont" onchange="applySettingsLive(); broadcastState();">
+                            <option value="var(--font-futura)">Futura Bold</option>
+                            <option value="var(--font-anton)">Anton / Impact</option>
+                            <option value="var(--font-calibri)">Calibri</option>
+                            <option value="var(--font-space)">Modern Sans</option>
+                            <option value="var(--font-times)">Times New Roman</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Font Timer</label>
+                        <select id="selectTimerFont" onchange="applySettingsLive(); broadcastState();">
+                            <option value="var(--font-futura)">Futura Bold</option>
+                            <option value="var(--font-anton)">Anton / Impact</option>
+                            <option value="var(--font-beonco)">Monospace / Digital</option>
+                            <option value="var(--font-space)">Modern Sans</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Font Pesan</label>
+                        <select id="selectMessageFont" onchange="applySettingsLive(); broadcastState();">
+                            <option value="var(--font-futura)">Futura Bold</option>
+                            <option value="var(--font-calibri)">Calibri</option>
+                            <option value="var(--font-space)">Modern Sans</option>
+                            <option value="var(--font-old-london)">Classic Serif</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Pengaturan Logo & Posisi (Upload File Lokal) -->
+            <div class="setting-section">
+                <div class="section-title">🖼️ Upload Logo & Posisi Logo</div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label class="form-label">Pilih File Logo dari Device</label>
+                    <input type="file" id="inputFileLogo" accept="image/*" onchange="handleLogoUpload(event)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Posisi Logo</label>
+                    <select id="selectLogoPos" onchange="applySettingsLive(); broadcastState();">
+                        <option value="none">-- Sembunyikan Logo --</option>
+                        <option value="left">Atas Kiri</option>
+                        <option value="top">Tengah Atas (Di atas Title)</option>
+                        <option value="right">Kanan (Di sebelah Watermark)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 4. Background Foto atau Video (Upload File Lokal) -->
+            <div class="setting-section">
+                <div class="section-title">🎥 Upload Background Foto / Video dari Device</div>
+                <div class="form-group">
+                    <label class="form-label">Pilih File Background (Gambar / Video .mp4 / .webm)</label>
+                    <input type="file" id="inputFileBg" accept="image/*,video/mp4,video/webm" onchange="handleBgUpload(event)">
+                </div>
+            </div>
+
+            <!-- 5. Spacing / Jarak Elemen -->
+            <div class="setting-section">
+                <div class="section-title">📐 Pengaturan Jarak (Spacing)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="form-group">
+                        <label class="form-label">Jarak Title ke Timer: <span id="valSpaceTitleTimer">20px</span></label>
+                        <input type="range" id="rangeSpaceTitleTimer" min="0" max="80" value="20" oninput="applySettingsLive(); broadcastState();">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Jarak Timer ke Pesan: <span id="valSpaceTimerMsg">20px</span></label>
+                        <input type="range" id="rangeSpaceTimerMsg" min="0" max="80" value="20" oninput="applySettingsLive(); broadcastState();">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGlobalSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rundownTimers = [
+            { id: 1, title: "Timer 1", durationMinutes: 10, remainingSeconds: 600, totalSeconds: 600, warningMinutes: 3, isRunning: false },
+            { id: 2, title: "Timer 2", durationMinutes: 10, remainingSeconds: 600, totalSeconds: 600, warningMinutes: 2, isRunning: false },
+            { id: 3, title: "Timer 3", durationMinutes: 10, remainingSeconds: 600, totalSeconds: 600, warningMinutes: 5, isRunning: false }
+        ];
+        let activeTimerId = 1;
+        let globalTimerInterval = null;
+        let isAudioEnabled = true;
+        let isBannerVisible = false;
+        let savedBanners = ["MARI KITA MARI", "WRAP UP PLUS", "SLIDE DECK READY", "Q&A SESSION"];
+
+        let uploadedLogoBase64 = "";
+        let uploadedBgBase64 = "";
+        let uploadedBgType = "image";
+
+        const broadcastChannel = new BroadcastChannel('bckstg_timer_channel');
+
+        const PUBLIC_BASE_URL = "https://krisnaforwork.github.io/bckstgboys-timer/";
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const previewTimerDisplay = document.getElementById('previewTimerDisplay');
+        const previewSubClock = document.getElementById('previewSubClock');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const onAirBadge = document.getElementById('onAirBadge');
+        const todDisplay = document.getElementById('todDisplay');
+        const lowerThirdBanner = document.getElementById('lowerThirdBanner');
+        const centerFocusMessage = document.getElementById('centerFocusMessage');
+        const mainContainer = document.getElementById('mainContainer');
+        const controllerPanel = document.getElementById('controllerPanel');
+        const presetBannerList = document.getElementById('presetBannerList');
+        const displayBgImage = document.getElementById('displayBgImage');
+        const displayBgVideo = document.getElementById('displayBgVideo');
+        const displayCenterTitle = document.getElementById('displayCenterTitle');
+        const previewTitle = document.getElementById('previewTitle');
+        const btnAudioToggle = document.getElementById('btnAudioToggle');
+        const inputMessageArea = document.getElementById('inputMessageArea');
+        const charCounter = document.getElementById('charCounter');
+        const btnToggleShowBanner = document.getElementById('btnToggleShowBanner');
+        const focusModeCheckbox = document.getElementById('focusModeCheckbox');
+        const settingsModal = document.getElementById('settingsModal');
+        const openOutputModalEl = document.getElementById('openOutputModal');
+        const rundownContainer = document.getElementById('rundownContainer');
+        const appHeader = document.getElementById('appHeader');
+
+        const logoLeft = document.getElementById('logoLeft');
+        const logoTopCenter = document.getElementById('logoTopCenter');
+        const headerRightZone = document.getElementById('headerRightZone');
+
+        const summaryCurrentTime = document.getElementById('summaryCurrentTime');
+        const summaryOverUnder = document.getElementById('summaryOverUnder');
+        const summaryEndOfShow = document.getElementById('summaryEndOfShow');
+        const summaryEstimated = document.getElementById('summaryEstimated');
+
+        // DETEKSI MODE: Jika dibuka sebagai output browser (?mode=display), langsung ubah ke mode display
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'display') {
+                if (appHeader) appHeader.style.display = 'none';
+                mainContainer.className = "mode-display";
+                if (controllerPanel) controllerPanel.style.display = 'none';
+            }
+            loadSettingsFromStorage();
+        });
+
+        // Broadcast State antar Tab/Browser secara Real-Time
+        function broadcastState() {
+            const state = {
+                rundownTimers,
+                activeTimerId,
+                isBannerVisible,
+                bannerText: inputMessageArea.value,
+                isFocusMode: focusModeCheckbox.checked,
+                settings: {
+                    titleColor: document.getElementById('pickerTitleColor').value,
+                    timerColor: document.getElementById('pickerTimerColor').value,
+                    msgColor: document.getElementById('pickerMessageColor').value,
+                    msgSize: document.getElementById('rangeMsgSize').value,
+                    titleFont: document.getElementById('selectTitleFont').value,
+                    timerFont: document.getElementById('selectTimerFont').value,
+                    msgFont: document.getElementById('selectMessageFont').value,
+                    logoPos: document.getElementById('selectLogoPos').value,
+                    spaceTitleTimer: document.getElementById('rangeSpaceTitleTimer').value,
+                    spaceTimerMsg: document.getElementById('rangeSpaceTimerMsg').value,
+                    logoBase64: uploadedLogoBase64,
+                    bgBase64: uploadedBgBase64,
+                    bgType: uploadedBgType
+                }
+            };
+            broadcastChannel.postMessage(state);
+            localStorage.setItem('bckstg_live_sync', JSON.stringify(state));
+        }
+
+        broadcastChannel.onmessage = (event) => {
+            applySyncedState(event.data);
+        };
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'bckstg_live_sync' && event.newValue) {
+                try {
+                    applySyncedState(JSON.parse(event.newValue));
+                } catch(e){}
+            }
+        });
+
+        function applySyncedState(data) {
+            if (!data) return;
+            rundownTimers = data.rundownTimers;
+            activeTimerId = data.activeTimerId;
+            isBannerVisible = data.isBannerVisible;
+            if (document.activeElement !== inputMessageArea) {
+                inputMessageArea.value = data.bannerText;
+            }
+            focusModeCheckbox.checked = data.isFocusMode;
+            
+            if (data.settings) {
+                document.getElementById('pickerTitleColor').value = data.settings.titleColor;
+                document.getElementById('pickerTimerColor').value = data.settings.timerColor;
+                document.getElementById('pickerMessageColor').value = data.settings.msgColor;
+                document.getElementById('rangeMsgSize').value = data.settings.msgSize;
+                document.getElementById('selectTitleFont').value = data.settings.titleFont;
+                document.getElementById('selectTimerFont').value = data.settings.timerFont;
+                document.getElementById('selectMessageFont').value = data.settings.msgFont;
+                document.getElementById('selectLogoPos').value = data.settings.logoPos;
+                document.getElementById('rangeSpaceTitleTimer').value = data.settings.spaceTitleTimer;
+                document.getElementById('rangeSpaceTimerMsg').value = data.settings.spaceTimerMsg;
+                uploadedLogoBase64 = data.settings.logoBase64;
+                uploadedBgBase64 = data.settings.bgBase64;
+                uploadedBgType = data.settings.bgType;
+                applySettingsLive();
+            }
+
+            renderRundown();
+            if (isBannerVisible) {
+                showBanner(data.bannerText, false);
+            } else {
+                hideMessage();
+            }
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedLogoBase64 = e.target.result;
+                applySettingsLive();
+                broadcastState();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleBgUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            uploadedBgType = file.type.includes('video') ? 'video' : 'image';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedBgBase64 = e.target.result;
+                applySettingsLive();
+                broadcastState();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applySettingsLive() {
+            const tColor = document.getElementById('pickerTitleColor').value;
+            const timerColor = document.getElementById('pickerTimerColor').value;
+            const mColor = document.getElementById('pickerMessageColor').value;
+            const msgSize = document.getElementById('rangeMsgSize').value + 'px';
+            document.getElementById('valMsgSize').innerText = msgSize;
+            
+            const tFont = document.getElementById('selectTitleFont').value;
+            const timerFont = document.getElementById('selectTimerFont').value;
+            const msgFont = document.getElementById('selectMessageFont').value;
+
+            const tSpace = document.getElementById('rangeSpaceTitleTimer').value + 'px';
+            const mSpace = document.getElementById('rangeSpaceTimerMsg').value + 'px';
+            document.getElementById('valSpaceTitleTimer').innerText = tSpace;
+            document.getElementById('valSpaceTimerMsg').innerText = mSpace;
+
+            const logoPos = document.getElementById('selectLogoPos').value;
+
+            document.documentElement.style.setProperty('--display-title-color', tColor);
+            document.documentElement.style.setProperty('--display-timer-color', timerColor);
+            document.documentElement.style.setProperty('--display-message-color', mColor);
+            document.documentElement.style.setProperty('--display-message-size', msgSize);
+            document.documentElement.style.setProperty('--active-title-font', tFont);
+            document.documentElement.style.setProperty('--active-timer-font', timerFont);
+            document.documentElement.style.setProperty('--active-message-font', msgFont);
+            document.documentElement.style.setProperty('--spacing-title-timer', tSpace);
+            document.documentElement.style.setProperty('--spacing-timer-message', mSpace);
+
+            logoLeft.style.display = 'none';
+            logoTopCenter.style.display = 'none';
+            headerRightZone.innerHTML = '<span class="small-app-title">BCKSTGBOYS TIMER</span>';
+
+            if (uploadedLogoBase64 && logoPos !== 'none') {
+                if (logoPos === 'left') {
+                    logoLeft.src = uploadedLogoBase64;
+                    logoLeft.style.display = 'block';
+                } else if (logoPos === 'top') {
+                    logoTopCenter.src = uploadedLogoBase64;
+                    logoTopCenter.style.display = 'block';
+                } else if (logoPos === 'right') {
+                    headerRightZone.innerHTML = `<img src="${uploadedLogoBase64}" class="custom-logo-display" style="max-height:26px; margin-right:8px;"><span class="small-app-title">BCKSTGBOYS TIMER</span>`;
+                }
+            }
+
+            displayBgImage.style.display = 'none';
+            displayBgVideo.style.display = 'none';
+            if (uploadedBgBase64) {
+                if (uploadedBgType === 'video') {
+                    displayBgVideo.src = uploadedBgBase64;
+                    displayBgVideo.style.display = 'block';
+                } else {
+                    displayBgImage.src = uploadedBgBase64;
+                    displayBgImage.style.display = 'block';
+                }
+            }
+        }
+
+        function saveGlobalSettings() {
+            const settingsData = {
+                titleColor: document.getElementById('pickerTitleColor').value,
+                timerColor: document.getElementById('pickerTimerColor').value,
+                msgColor: document.getElementById('pickerMessageColor').value,
+                msgSize: document.getElementById('rangeMsgSize').value,
+                titleFont: document.getElementById('selectTitleFont').value,
+                timerFont: document.getElementById('selectTimerFont').value,
+                msgFont: document.getElementById('selectMessageFont').value,
+                logoPos: document.getElementById('selectLogoPos').value,
+                spaceTitleTimer: document.getElementById('rangeSpaceTitleTimer').value,
+                spaceTimerMsg: document.getElementById('rangeSpaceTimerMsg').value,
+                logoBase64: uploadedLogoBase64,
+                bgBase64: uploadedBgBase64,
+                bgType: uploadedBgType
+            };
+            localStorage.setItem('bckstg_settings', JSON.stringify(settingsData));
+            applySettingsLive();
+            broadcastState();
+            closeSettingsModal();
+        }
+
+        function loadSettingsFromStorage() {
+            const saved = localStorage.getItem('bckstg_settings');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if(data.titleColor) document.getElementById('pickerTitleColor').value = data.titleColor;
+                    if(data.timerColor) document.getElementById('pickerTimerColor').value = data.timerColor;
+                    if(data.msgColor) document.getElementById('pickerMessageColor').value = data.msgColor;
+                    if(data.msgSize) document.getElementById('rangeMsgSize').value = data.msgSize;
+                    if(data.titleFont) document.getElementById('selectTitleFont').value = data.titleFont;
+                    if(data.timerFont) document.getElementById('selectTimerFont').value = data.timerFont;
+                    if(data.msgFont) document.getElementById('selectMessageFont').value = data.msgFont;
+                    if(data.logoPos) document.getElementById('selectLogoPos').value = data.logoPos;
+                    if(data.spaceTitleTimer) document.getElementById('rangeSpaceTitleTimer').value = data.spaceTitleTimer;
+                    if(data.spaceTimerMsg) document.getElementById('rangeSpaceTimerMsg').value = data.spaceTimerMsg;
+                    if(data.logoBase64) uploadedLogoBase64 = data.logoBase64;
+                    if(data.bgBase64) uploadedBgBase64 = data.bgBase64;
+                    if(data.bgType) uploadedBgType = data.bgType;
+                    applySettingsLive();
+                } catch(e){}
+            }
+        }
+
+        function updateCharCounter() {
+            if (inputMessageArea.value.length > 300) {
+                inputMessageArea.value = inputMessageArea.value.substring(0, 300);
+            }
+            charCounter.innerText = `${inputMessageArea.value.length} / 300 huruf`;
+            broadcastState();
+        }
+        updateCharCounter();
+
+        function openOutputModal() { openOutputModalEl.classList.add('active'); }
+        function closeOutputModal() { openOutputModalEl.classList.remove('active'); }
+        function getOutputUrl() { return PUBLIC_BASE_URL + "?mode=display"; }
+
+        function copyOutputLink() {
+            navigator.clipboard.writeText(getOutputUrl()).then(() => {
+                const copyBtnText = document.getElementById('copyBtnText');
+                copyBtnText.innerText = "Copied!";
+                setTimeout(() => { copyBtnText.innerText = "Copy Link Output"; }, 2000);
+            });
+        }
+
+        function openOutputInBrowser() {
+            window.open(getOutputUrl(), '_blank', 'width=1920,height=1080,menubar=no,toolbar=no,location=no');
+        }
+
+        function openSettingsModal() { settingsModal.classList.add('active'); }
+        function closeSettingsModal() { settingsModal.classList.remove('active'); }
+
+        function toggleAudioSound() {
+            isAudioEnabled = !isAudioEnabled;
+            btnAudioToggle.innerText = isAudioEnabled ? "SOUND: ON" : "SOUND: OFF";
+            if (isAudioEnabled) btnAudioToggle.classList.add('btn-toggle-active');
+            else btnAudioToggle.classList.remove('btn-toggle-active');
+        }
+
+        function playBeep(freq = 880, duration = 0.15) {
+            if (!isAudioEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function updateTOD() {
+            const now = new Date();
+            let timeStr = now.toLocaleTimeString();
+            todDisplay.innerText = "TOD: " + timeStr;
+            summaryCurrentTime.innerText = timeStr;
+
+            let totalRemainingSecs = rundownTimers.reduce((acc, t) => acc + t.remainingSeconds, 0);
+            let finishDate = new Date(now.getTime() + totalRemainingSecs * 1000);
+            let finishStr = finishDate.toLocaleTimeString();
+
+            summaryEndOfShow.innerText = finishStr;
+            summaryEstimated.innerText = finishStr;
+
+            let totalOriginalSecs = rundownTimers.reduce((acc, t) => acc + t.totalSeconds, 0);
+            let diffSecs = totalRemainingSecs - totalOriginalSecs;
+            if (Math.abs(diffSecs) < 5) {
+                summaryOverUnder.innerText = "ON TIME";
+                summaryOverUnder.className = "status-tag-on-time";
+            } else if (diffSecs > 0) {
+                summaryOverUnder.innerText = `+${Math.floor(diffSecs/60)}m OVER`;
+                summaryOverUnder.className = "status-tag-over";
+            } else {
+                summaryOverUnder.innerText = `${Math.floor(Math.abs(diffSecs)/60)}m UNDER`;
+                summaryOverUnder.className = "status-tag-under";
+            }
+        }
+        setInterval(updateTOD, 1000);
+        updateTOD();
+
+        function formatTime(sec) {
+            const isNegative = sec < 0;
+            const absSec = Math.abs(sec);
+            const m = Math.floor(absSec / 60);
+            const s = absSec % 60;
+            const formatted = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            return isNegative ? `-${formatted}` : formatted;
+        }
+
+        function renderRundown() {
+            rundownContainer.innerHTML = '';
+            rundownTimers.forEach((timer, idx) => {
+                const isActive = timer.id === activeTimerId;
+                const row = document.createElement('div');
+                row.className = `rundown-row ${isActive ? 'active-rundown' : ''}`;
+                row.innerHTML = `
+                    <div class="rundown-index">${idx + 1}</div>
+                    <button class="rundown-start-btn" onclick="setActiveTimer(${timer.id})">${timer.isRunning ? 'RUNNING' : (isActive ? 'ON AIR' : 'Select')}</button>
+                    <div class="rundown-time">${formatTime(timer.remainingSeconds)}</div>
+                    <input type="text" class="rundown-title-input" value="${timer.title}" oninput="updateRundownTitle(${timer.id}, this.value)">
+                    <div class="rundown-actions">
+                        <button class="btn-rundown-action btn-rundown-play" onclick="togglePlayTimer(${timer.id})" title="${timer.isRunning ? 'Pause' : 'Start'}">
+                            ${timer.isRunning ? '❚❚' : '▶'}
+                        </button>
+                    </div>
+                `;
+                rundownContainer.appendChild(row);
+            });
+            updateActiveDisplay();
+        }
+
+        function addRundownTimer() {
+            if (rundownTimers.length >= 10) return;
+            const newId = rundownTimers.length > 0 ? Math.max(...rundownTimers.map(t => t.id)) + 1 : 1;
+            rundownTimers.push({
+                id: newId,
+                title: `Timer ${newId}`,
+                durationMinutes: 10,
+                remainingSeconds: 600,
+                totalSeconds: 600,
+                warningMinutes: 3,
+                isRunning: false
+            });
+            renderRundown();
+            broadcastState();
+        }
+
+        function updateRundownTitle(id, val) {
+            const t = rundownTimers.find(x => x.id === id);
+            if (t) {
+                t.title = val;
+                if (id === activeTimerId) {
+                    displayCenterTitle.innerText = val;
+                    previewTitle.innerText = val;
+                }
+                broadcastState();
+            }
+        }
+
+        function setActiveTimer(id) {
+            activeTimerId = id;
+            renderRundown();
+            broadcastState();
+        }
+
+        function togglePlayTimer(id) {
+            setActiveTimer(id);
+            const t = rundownTimers.find(x => x.id === id);
+            if (t) {
+                t.isRunning = !t.isRunning;
+                onAirBadge.classList.toggle('active', t.isRunning);
+                checkGlobalInterval();
+                renderRundown();
+                broadcastState();
+            }
+        }
+
+        function startActiveTimer() { togglePlayTimer(activeTimerId); }
+        function pauseActiveTimer() {
+            const t = rundownTimers.find(x => x.id === activeTimerId);
+            if (t) { 
+                t.isRunning = false; 
+                onAirBadge.classList.remove('active'); 
+                checkGlobalInterval(); 
+                renderRundown(); 
+                broadcastState();
+            }
+        }
+        function resetActiveTimer() {
+            const t = rundownTimers.find(x => x.id === activeTimerId);
+            if (t) {
+                t.isRunning = false;
+                t.remainingSeconds = t.totalSeconds;
+                onAirBadge.classList.remove('active');
+                checkGlobalInterval();
+                renderRundown();
+                broadcastState();
+            }
+        }
+
+        function addTime(sec) {
+            const t = rundownTimers.find(x => x.id === activeTimerId);
+            if (t) { 
+                t.remainingSeconds += sec; 
+                renderRundown(); 
+                broadcastState();
+            }
+        }
+
+        function checkGlobalInterval() {
+            const anyRunning = rundownTimers.some(t => t.isRunning);
+            if (anyRunning && !globalTimerInterval) {
+                globalTimerInterval = setInterval(() => {
+                    rundownTimers.forEach(t => {
+                        if (t.isRunning) {
+                            t.remainingSeconds--;
+                            if (t.remainingSeconds === 0) playBeep(440, 0.5);
+                        }
+                    });
+                    renderRundown();
+                    broadcastState();
+                }, 1000);
+            } else if (!anyRunning && globalTimerInterval) {
+                clearInterval(globalTimerInterval);
+                globalTimerInterval = null;
+            }
+        }
+
+        function updateActiveDisplay() {
+            const t = rundownTimers.find(x => x.id === activeTimerId) || rundownTimers[0];
+            if (!t) return;
+            const formattedStr = formatTime(t.remainingSeconds);
+            timerDisplay.innerText = formattedStr;
+            previewTimerDisplay.innerText = formattedStr;
+            previewSubClock.innerText = `${formattedStr}.0`;
+            displayCenterTitle.innerText = t.title;
+            previewTitle.innerText = t.title;
+
+            const warningSecs = (t.warningMinutes || 3) * 60;
+            timerDisplay.classList.remove('status-warning', 'status-danger');
+            previewTimerDisplay.classList.remove('status-warning', 'status-danger');
+            if (t.remainingSeconds <= 60) {
+                timerDisplay.classList.add('status-danger');
+            } else if (t.remainingSeconds <= warningSecs) {
+                timerDisplay.classList.add('status-warning');
+            }
+            const progressPct = Math.max(0, Math.min(100, (t.remainingSeconds / (t.totalSeconds || 1)) * 100));
+            progressBarFill.style.width = `${progressPct}%`;
+        }
+
+        function switchView(mode, btnEl) {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnEl) btnEl.classList.add('active');
+            mainContainer.className = `mode-${mode}`;
+            controllerPanel.style.display = mode === 'display' ? 'none' : 'flex';
+        }
+
+        function renderBanners() {
+            presetBannerList.innerHTML = '';
+            savedBanners.forEach((msg, idx) => {
+                const div = document.createElement('div');
+                div.className = 'preset-item';
+                div.innerHTML = `
+                    <span>${msg}</span>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-success btn-xs" onclick="selectPresetBanner('${msg}')">Select</button>
+                    </div>
+                `;
+                presetBannerList.appendChild(div);
+            });
+        }
+
+        function selectPresetBanner(msg) {
+            inputMessageArea.value = msg;
+            updateCharCounter();
+            showBanner(msg, false);
+        }
+
+        function toggleShowMessage() {
+            let msg = inputMessageArea.value.trim();
+            isBannerVisible ? hideMessage() : (msg !== '' && showBanner(msg, false));
+        }
+
+        function showBanner(msg, isFlashing = false) {
+            isBannerVisible = true;
+            btnToggleShowBanner.innerHTML = '● Hide';
+            btnToggleShowBanner.className = 'btn btn-danger btn-xs';
+
+            if (focusModeCheckbox.checked) {
+                timerDisplay.style.display = 'none';
+                todDisplay.style.display = 'none';
+                centerFocusMessage.innerText = msg;
+                centerFocusMessage.classList.add('active');
+                if (isFlashing) centerFocusMessage.classList.add('flashing');
+                else centerFocusMessage.classList.remove('flashing');
+            } else {
+                centerFocusMessage.classList.remove('active', 'flashing');
+                timerDisplay.style.display = 'block';
+                todDisplay.style.display = 'block';
+                lowerThirdBanner.innerText = msg;
+                lowerThirdBanner.classList.add('active');
+                if (isFlashing) lowerThirdBanner.classList.add('flashing');
+                else lowerThirdBanner.classList.remove('flashing');
+            }
+            broadcastState();
+        }
+
+        function hideMessage() {
+            lowerThirdBanner.classList.remove('active', 'flashing');
+            centerFocusMessage.classList.remove('active', 'flashing');
+            isBannerVisible = false;
+            btnToggleShowBanner.innerHTML = '● Show';
+            btnToggleShowBanner.className = 'btn btn-success btn-xs';
+            timerDisplay.style.display = 'block';
+            todDisplay.style.display = 'block';
+            broadcastState();
+        }
+
+        function flashBlinkMessage() {
+            let msg = inputMessageArea.value.trim();
+            if (msg !== '') { showBanner(msg, true); playBeep(1200, 0.2); }
+        }
+
+        function saveCurrentMessage() {
+            let text = inputMessageArea.value.trim();
+            if (text !== '' && !savedBanners.includes(text)) {
+                savedBanners.push(text);
+                renderBanners();
+            }
+        }
+
+        renderRundown();
+        renderBanners();
+    </script>
+</body>
+</html>
