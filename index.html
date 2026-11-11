@@ -255,7 +255,7 @@
             color: #9ca3af;
         }
 
-        input[type="text"], input[type="number"], select, textarea, input[type="range"] {
+        input[type="text"], input[type="number"], select, textarea, input[type="range"], input[type="file"] {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border-glass);
             padding: 9px 12px;
@@ -264,6 +264,17 @@
             font-family: inherit;
             font-size: 0.9rem;
             outline: none;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary);
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #000;
+            margin-right: 10px;
         }
 
         input[type="color"] {
@@ -1073,21 +1084,21 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                     <div class="form-group">
                         <label class="form-label">Warna Title</label>
-                        <input type="color" id="pickerTitleColor" value="#ffffff" oninput="applySettingsLive()">
+                        <input type="color" id="pickerTitleColor" value="#ffffff" oninput="applySettingsLive(); broadcastState();">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Warna Timer</label>
-                        <input type="color" id="pickerTimerColor" value="#10b981" oninput="applySettingsLive()">
+                        <input type="color" id="pickerTimerColor" value="#10b981" oninput="applySettingsLive(); broadcastState();">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Warna Pesan</label>
-                        <input type="color" id="pickerMessageColor" value="#ffffff" oninput="applySettingsLive()">
+                        <input type="color" id="pickerMessageColor" value="#ffffff" oninput="applySettingsLive(); broadcastState();">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Ukuran Font Pesan (10px - 42px): <span id="valMsgSize">24px</span></label>
-                    <input type="range" id="rangeMsgSize" min="10" max="42" value="24" oninput="applySettingsLive()">
+                    <input type="range" id="rangeMsgSize" min="10" max="42" value="24" oninput="applySettingsLive(); broadcastState();">
                 </div>
             </div>
 
@@ -1097,7 +1108,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                     <div class="form-group">
                         <label class="form-label">Font Title</label>
-                        <select id="selectTitleFont" onchange="applySettingsLive()">
+                        <select id="selectTitleFont" onchange="applySettingsLive(); broadcastState();">
                             <option value="var(--font-futura)">Futura Bold</option>
                             <option value="var(--font-anton)">Anton / Impact</option>
                             <option value="var(--font-calibri)">Calibri</option>
@@ -1107,7 +1118,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Font Timer</label>
-                        <select id="selectTimerFont" onchange="applySettingsLive()">
+                        <select id="selectTimerFont" onchange="applySettingsLive(); broadcastState();">
                             <option value="var(--font-futura)">Futura Bold</option>
                             <option value="var(--font-anton)">Anton / Impact</option>
                             <option value="var(--font-beonco)">Monospace / Digital</option>
@@ -1116,7 +1127,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Font Pesan</label>
-                        <select id="selectMessageFont" onchange="applySettingsLive()">
+                        <select id="selectMessageFont" onchange="applySettingsLive(); broadcastState();">
                             <option value="var(--font-futura)">Futura Bold</option>
                             <option value="var(--font-calibri)">Calibri</option>
                             <option value="var(--font-space)">Modern Sans</option>
@@ -1126,16 +1137,16 @@
                 </div>
             </div>
 
-            <!-- 3. Pengaturan Logo & Posisi -->
+            <!-- 3. Pengaturan Logo & Posisi (Upload File Lokal) -->
             <div class="setting-section">
-                <div class="section-title">🖼️ Logo & Posisi Logo</div>
+                <div class="section-title">🖼️ Upload Logo & Posisi Logo</div>
                 <div class="form-group" style="margin-bottom: 10px;">
-                    <label class="form-label">URL Gambar Logo</label>
-                    <input type="text" id="inputLogoUrl" placeholder="https://contoh.com/logo.png" oninput="applySettingsLive()">
+                    <label class="form-label">Pilih File Logo dari Device</label>
+                    <input type="file" id="inputFileLogo" accept="image/*" onchange="handleLogoUpload(event)">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Posisi Logo</label>
-                    <select id="selectLogoPos" onchange="applySettingsLive()">
+                    <select id="selectLogoPos" onchange="applySettingsLive(); broadcastState();">
                         <option value="none">-- Sembunyikan Logo --</option>
                         <option value="left">Atas Kiri</option>
                         <option value="top">Tengah Atas (Di atas Title)</option>
@@ -1144,12 +1155,12 @@
                 </div>
             </div>
 
-            <!-- 4. Background Foto atau Video -->
+            <!-- 4. Background Foto atau Video (Upload File Lokal) -->
             <div class="setting-section">
-                <div class="section-title">🎥 Background Foto / Video (URL)</div>
+                <div class="section-title">🎥 Upload Background Foto / Video dari Device</div>
                 <div class="form-group">
-                    <label class="form-label">URL Gambar atau Video Background</label>
-                    <input type="text" id="inputBgUrl" placeholder="https://.../video.mp4 atau gambar.jpg" oninput="applySettingsLive()">
+                    <label class="form-label">Pilih File Background (Gambar / Video .mp4 / .webm)</label>
+                    <input type="file" id="inputFileBg" accept="image/*,video/mp4,video/webm" onchange="handleBgUpload(event)">
                 </div>
             </div>
 
@@ -1159,11 +1170,11 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                     <div class="form-group">
                         <label class="form-label">Jarak Title ke Timer: <span id="valSpaceTitleTimer">20px</span></label>
-                        <input type="range" id="rangeSpaceTitleTimer" min="0" max="80" value="20" oninput="applySettingsLive()">
+                        <input type="range" id="rangeSpaceTitleTimer" min="0" max="80" value="20" oninput="applySettingsLive(); broadcastState();">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Jarak Timer ke Pesan: <span id="valSpaceTimerMsg">20px</span></label>
-                        <input type="range" id="rangeSpaceTimerMsg" min="0" max="80" value="20" oninput="applySettingsLive()">
+                        <input type="range" id="rangeSpaceTimerMsg" min="0" max="80" value="20" oninput="applySettingsLive(); broadcastState();">
                     </div>
                 </div>
             </div>
@@ -1186,6 +1197,12 @@
         let isAudioEnabled = true;
         let isBannerVisible = false;
         let savedBanners = ["MARI KITA MARI", "WRAP UP PLUS", "SLIDE DECK READY", "Q&A SESSION"];
+
+        let uploadedLogoBase64 = "";
+        let uploadedBgBase64 = "";
+        let uploadedBgType = "image";
+
+        const broadcastChannel = new BroadcastChannel('bckstg_timer_channel');
 
         const PUBLIC_BASE_URL = "https://krisnaforwork.github.io/bckstgboys-timer/";
 
@@ -1223,7 +1240,7 @@
         const summaryEndOfShow = document.getElementById('summaryEndOfShow');
         const summaryEstimated = document.getElementById('summaryEstimated');
 
-        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser (?mode=display), langsung ubah ke mode display
+        // DETEKSI MODE: Jika dibuka sebagai output browser (?mode=display), langsung ubah ke mode display
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('mode') === 'display') {
@@ -1233,6 +1250,93 @@
             }
             loadSettingsFromStorage();
         });
+
+        // Broadcast State antar Tab/Browser secara Real-Time
+        function broadcastState() {
+            const state = {
+                rundownTimers,
+                activeTimerId,
+                isBannerVisible,
+                bannerText: inputMessageArea.value,
+                isFocusMode: focusModeCheckbox.checked,
+                settings: {
+                    titleColor: document.getElementById('pickerTitleColor').value,
+                    timerColor: document.getElementById('pickerTimerColor').value,
+                    msgColor: document.getElementById('pickerMessageColor').value,
+                    msgSize: document.getElementById('rangeMsgSize').value,
+                    titleFont: document.getElementById('selectTitleFont').value,
+                    timerFont: document.getElementById('selectTimerFont').value,
+                    msgFont: document.getElementById('selectMessageFont').value,
+                    logoPos: document.getElementById('selectLogoPos').value,
+                    spaceTitleTimer: document.getElementById('rangeSpaceTitleTimer').value,
+                    spaceTimerMsg: document.getElementById('rangeSpaceTimerMsg').value,
+                    logoBase64: uploadedLogoBase64,
+                    bgBase64: uploadedBgBase64,
+                    bgType: uploadedBgType
+                }
+            };
+            broadcastChannel.postMessage(state);
+        }
+
+        broadcastChannel.onmessage = (event) => {
+            const data = event.data;
+            if (data) {
+                rundownTimers = data.rundownTimers;
+                activeTimerId = data.activeTimerId;
+                isBannerVisible = data.isBannerVisible;
+                inputMessageArea.value = data.bannerText;
+                focusModeCheckbox.checked = data.isFocusMode;
+                
+                if (data.settings) {
+                    document.getElementById('pickerTitleColor').value = data.settings.titleColor;
+                    document.getElementById('pickerTimerColor').value = data.settings.timerColor;
+                    document.getElementById('pickerMessageColor').value = data.settings.msgColor;
+                    document.getElementById('rangeMsgSize').value = data.settings.msgSize;
+                    document.getElementById('selectTitleFont').value = data.settings.titleFont;
+                    document.getElementById('selectTimerFont').value = data.settings.timerFont;
+                    document.getElementById('selectMessageFont').value = data.settings.msgFont;
+                    document.getElementById('selectLogoPos').value = data.settings.logoPos;
+                    document.getElementById('rangeSpaceTitleTimer').value = data.settings.spaceTitleTimer;
+                    document.getElementById('rangeSpaceTimerMsg').value = data.settings.spaceTimerMsg;
+                    uploadedLogoBase64 = data.settings.logoBase64;
+                    uploadedBgBase64 = data.settings.bgBase64;
+                    uploadedBgType = data.settings.bgType;
+                    applySettingsLive();
+                }
+
+                renderRundown();
+                if (isBannerVisible) {
+                    showBanner(data.bannerText, false);
+                } else {
+                    hideMessage();
+                }
+            }
+        };
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedLogoBase64 = e.target.result;
+                applySettingsLive();
+                broadcastState();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleBgUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            uploadedBgType = file.type.includes('video') ? 'video' : 'image';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedBgBase64 = e.target.result;
+                applySettingsLive();
+                broadcastState();
+            };
+            reader.readAsDataURL(file);
+        }
 
         function applySettingsLive() {
             const tColor = document.getElementById('pickerTitleColor').value;
@@ -1250,11 +1354,8 @@
             document.getElementById('valSpaceTitleTimer').innerText = tSpace;
             document.getElementById('valSpaceTimerMsg').innerText = mSpace;
 
-            const logoUrl = document.getElementById('inputLogoUrl').value.trim();
             const logoPos = document.getElementById('selectLogoPos').value;
-            const bgUrl = document.getElementById('inputBgUrl').value.trim();
 
-            // Set ke Root CSS
             document.documentElement.style.setProperty('--display-title-color', tColor);
             document.documentElement.style.setProperty('--display-timer-color', timerColor);
             document.documentElement.style.setProperty('--display-message-color', mColor);
@@ -1265,32 +1366,30 @@
             document.documentElement.style.setProperty('--spacing-title-timer', tSpace);
             document.documentElement.style.setProperty('--spacing-timer-message', mSpace);
 
-            // Terapkan Logo
             logoLeft.style.display = 'none';
             logoTopCenter.style.display = 'none';
             headerRightZone.innerHTML = '<span class="small-app-title">BCKSTGBOYS TIMER</span>';
 
-            if (logoUrl && logoPos !== 'none') {
+            if (uploadedLogoBase64 && logoPos !== 'none') {
                 if (logoPos === 'left') {
-                    logoLeft.src = logoUrl;
+                    logoLeft.src = uploadedLogoBase64;
                     logoLeft.style.display = 'block';
                 } else if (logoPos === 'top') {
-                    logoTopCenter.src = logoUrl;
+                    logoTopCenter.src = uploadedLogoBase64;
                     logoTopCenter.style.display = 'block';
                 } else if (logoPos === 'right') {
-                    headerRightZone.innerHTML = `<img src="${logoUrl}" class="custom-logo-display" style="max-height:26px; margin-right:8px;"><span class="small-app-title">BCKSTGBOYS TIMER</span>`;
+                    headerRightZone.innerHTML = `<img src="${uploadedLogoBase64}" class="custom-logo-display" style="max-height:26px; margin-right:8px;"><span class="small-app-title">BCKSTGBOYS TIMER</span>`;
                 }
             }
 
-            // Terapkan Background
             displayBgImage.style.display = 'none';
             displayBgVideo.style.display = 'none';
-            if (bgUrl) {
-                if (bgUrl.endsWith('.mp4') || bgUrl.endsWith('.webm') || bgUrl.includes('video')) {
-                    displayBgVideo.src = bgUrl;
+            if (uploadedBgBase64) {
+                if (uploadedBgType === 'video') {
+                    displayBgVideo.src = uploadedBgBase64;
                     displayBgVideo.style.display = 'block';
                 } else {
-                    displayBgImage.src = bgUrl;
+                    displayBgImage.src = uploadedBgBase64;
                     displayBgImage.style.display = 'block';
                 }
             }
@@ -1305,14 +1404,16 @@
                 titleFont: document.getElementById('selectTitleFont').value,
                 timerFont: document.getElementById('selectTimerFont').value,
                 msgFont: document.getElementById('selectMessageFont').value,
-                logoUrl: document.getElementById('inputLogoUrl').value,
                 logoPos: document.getElementById('selectLogoPos').value,
-                bgUrl: document.getElementById('inputBgUrl').value,
                 spaceTitleTimer: document.getElementById('rangeSpaceTitleTimer').value,
-                spaceTimerMsg: document.getElementById('rangeSpaceTimerMsg').value
+                spaceTimerMsg: document.getElementById('rangeSpaceTimerMsg').value,
+                logoBase64: uploadedLogoBase64,
+                bgBase64: uploadedBgBase64,
+                bgType: uploadedBgType
             };
             localStorage.setItem('bckstg_settings', JSON.stringify(settingsData));
             applySettingsLive();
+            broadcastState();
             closeSettingsModal();
         }
 
@@ -1328,11 +1429,12 @@
                     if(data.titleFont) document.getElementById('selectTitleFont').value = data.titleFont;
                     if(data.timerFont) document.getElementById('selectTimerFont').value = data.timerFont;
                     if(data.msgFont) document.getElementById('selectMessageFont').value = data.msgFont;
-                    if(data.logoUrl) document.getElementById('inputLogoUrl').value = data.logoUrl;
                     if(data.logoPos) document.getElementById('selectLogoPos').value = data.logoPos;
-                    if(data.bgUrl) document.getElementById('inputBgUrl').value = data.bgUrl;
                     if(data.spaceTitleTimer) document.getElementById('rangeSpaceTitleTimer').value = data.spaceTitleTimer;
                     if(data.spaceTimerMsg) document.getElementById('rangeSpaceTimerMsg').value = data.spaceTimerMsg;
+                    if(data.logoBase64) uploadedLogoBase64 = data.logoBase64;
+                    if(data.bgBase64) uploadedBgBase64 = data.bgBase64;
+                    if(data.bgType) uploadedBgType = data.bgType;
                     applySettingsLive();
                 } catch(e){}
             }
@@ -1461,6 +1563,7 @@
                 isRunning: false
             });
             renderRundown();
+            broadcastState();
         }
 
         function updateRundownTitle(id, val) {
@@ -1471,12 +1574,14 @@
                     displayCenterTitle.innerText = val;
                     previewTitle.innerText = val;
                 }
+                broadcastState();
             }
         }
 
         function setActiveTimer(id) {
             activeTimerId = id;
             renderRundown();
+            broadcastState();
         }
 
         function togglePlayTimer(id) {
@@ -1487,13 +1592,20 @@
                 onAirBadge.classList.toggle('active', t.isRunning);
                 checkGlobalInterval();
                 renderRundown();
+                broadcastState();
             }
         }
 
         function startActiveTimer() { togglePlayTimer(activeTimerId); }
         function pauseActiveTimer() {
             const t = rundownTimers.find(x => x.id === activeTimerId);
-            if (t) { t.isRunning = false; onAirBadge.classList.remove('active'); checkGlobalInterval(); renderRundown(); }
+            if (t) { 
+                t.isRunning = false; 
+                onAirBadge.classList.remove('active'); 
+                checkGlobalInterval(); 
+                renderRundown(); 
+                broadcastState();
+            }
         }
         function resetActiveTimer() {
             const t = rundownTimers.find(x => x.id === activeTimerId);
@@ -1503,12 +1615,17 @@
                 onAirBadge.classList.remove('active');
                 checkGlobalInterval();
                 renderRundown();
+                broadcastState();
             }
         }
 
         function addTime(sec) {
             const t = rundownTimers.find(x => x.id === activeTimerId);
-            if (t) { t.remainingSeconds += sec; renderRundown(); }
+            if (t) { 
+                t.remainingSeconds += sec; 
+                renderRundown(); 
+                broadcastState();
+            }
         }
 
         function checkGlobalInterval() {
@@ -1522,6 +1639,7 @@
                         }
                     });
                     renderRundown();
+                    broadcastState();
                 }, 1000);
             } else if (!anyRunning && globalTimerInterval) {
                 clearInterval(globalTimerInterval);
@@ -1605,6 +1723,7 @@
                 if (isFlashing) lowerThirdBanner.classList.add('flashing');
                 else lowerThirdBanner.classList.remove('flashing');
             }
+            broadcastState();
         }
 
         function hideMessage() {
@@ -1615,6 +1734,7 @@
             btnToggleShowBanner.className = 'btn btn-success btn-xs';
             timerDisplay.style.display = 'block';
             todDisplay.style.display = 'block';
+            broadcastState();
         }
 
         function flashBlinkMessage() {
