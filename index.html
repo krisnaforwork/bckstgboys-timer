@@ -45,7 +45,10 @@
             --display-title-color: #ffffff;
             --display-timer-color: #10b981;
             --display-message-color: #ffffff;
-            --display-message-size: clamp(1rem, 2.5vw, 2rem);
+            --display-message-size: 24px;
+
+            --spacing-title-timer: 20px;
+            --spacing-timer-message: 20px;
 
             --font-futura: 'Futura Bold', 'Outfit', system-ui, sans-serif;
             --font-calibri: 'Calibri', 'Candara', Segoe, sans-serif;
@@ -252,7 +255,7 @@
             color: #9ca3af;
         }
 
-        input[type="text"], input[type="number"], select, textarea, input[type="color"], input[type="range"] {
+        input[type="text"], input[type="number"], select, textarea, input[type="range"] {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border-glass);
             padding: 9px 12px;
@@ -261,6 +264,25 @@
             font-family: inherit;
             font-size: 0.9rem;
             outline: none;
+        }
+
+        /* Perbaikan styling color picker agar menampilkan palet warna secara utuh dan jelas */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: 1px solid var(--border-glass);
+            width: 100%;
+            height: 42px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            padding: 4px;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
         }
 
         .rundown-container {
@@ -496,6 +518,7 @@
             color: #9ca3af;
         }
 
+        /* SPEAKER DISPLAY UTAMA */
         .speaker-display {
             position: relative;
             background: #000;
@@ -505,7 +528,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 40px;
+            padding: 30px 40px;
             border: 1px solid var(--border-glass);
             min-height: 500px;
         }
@@ -516,14 +539,16 @@
             border: none;
         }
 
-        .bg-overlay-img {
+        /* Background Media (Foto / Video) */
+        .bg-media-el {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
             z-index: 1;
-            opacity: 0.3;
+            opacity: 0.35;
         }
 
+        /* Header Display */
         .speaker-header {
             position: relative;
             z-index: 10;
@@ -533,12 +558,36 @@
             align-items: center;
         }
 
+        .speaker-header-left {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .speaker-header-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .speaker-header-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
         .center-stage-title {
             font-family: var(--active-title-font);
             font-size: clamp(1.4rem, 2.8vw, 2.4rem);
             font-weight: 700;
             letter-spacing: 3px;
-            color: var(--display-title-color) !important;
+            color: var(--display-title-color);
             text-transform: uppercase;
         }
 
@@ -550,10 +599,11 @@
             color: #ffffff;
             text-transform: uppercase;
             opacity: 0.9;
+            white-space: nowrap;
         }
 
         .custom-logo-display {
-            max-height: 60px;
+            max-height: 50px;
             width: auto;
             object-fit: contain;
         }
@@ -567,15 +617,16 @@
             justify-content: center;
             width: 100%;
             margin: auto 0;
+            gap: var(--spacing-title-timer);
         }
 
         .main-timer-digits {
             font-family: var(--active-timer-font);
-            font-size: min(18vw, 15rem);
+            font-size: min(16vw, 14rem);
             font-weight: 700;
             line-height: 0.95;
             letter-spacing: -2px;
-            color: var(--display-timer-color) !important;
+            color: var(--display-timer-color);
             font-variant-numeric: tabular-nums;
         }
 
@@ -600,19 +651,11 @@
             font-weight: 600;
             letter-spacing: 2px;
             color: rgba(255, 255, 255, 0.75);
-            margin-top: 20px;
+            margin-top: var(--spacing-timer-message);
             background: rgba(255, 255, 255, 0.05);
             padding: 8px 24px;
             border-radius: 50px;
             border: 1px solid var(--border-glass);
-        }
-
-        .tod-clock-display.centered-tod {
-            font-size: clamp(3rem, 7vw, 6rem);
-            background: transparent;
-            border: none;
-            padding: 0;
-            margin-top: 0;
         }
 
         .lower-third-banner {
@@ -620,18 +663,19 @@
             z-index: 10;
             width: 100%;
             background: transparent;
-            color: var(--display-message-color) !important;
+            color: var(--display-message-color);
             padding: 10px 20px;
             border-radius: 12px;
             text-align: center;
             font-family: var(--active-message-font);
-            font-size: var(--display-message-size) !important;
+            font-size: var(--display-message-size);
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
             transform: translateY(150%);
             opacity: 0;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            margin-top: var(--spacing-timer-message);
         }
 
         .lower-third-banner.active {
@@ -650,11 +694,11 @@
             overflow: hidden;
             text-align: center;
             font-family: var(--active-message-font);
-            font-size: var(--display-message-size) !important;
+            font-size: var(--display-message-size);
             font-weight: 900;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--display-message-color) !important;
+            color: var(--display-message-color);
             z-index: 25;
             padding: 10px;
         }
@@ -716,7 +760,7 @@
 
         .settings-modal {
             width: 90%;
-            max-width: 650px;
+            max-width: 700px;
             max-height: 85vh;
             overflow-y: auto;
             padding: 24px;
@@ -751,7 +795,9 @@
         }
 
         .setting-section {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 16px;
         }
 
         .output-modal-card {
@@ -943,15 +989,24 @@
 
         </div>
 
+        <!-- SPEAKER DISPLAY -->
         <div class="speaker-display" id="speakerDisplay">
-            <img src="" id="displayBgImage" class="bg-overlay-img" style="display: none;">
+            <!-- Background Media (Foto / Video) -->
+            <img src="" id="displayBgImage" class="bg-media-el" style="display: none;">
+            <video src="" id="displayBgVideo" class="bg-media-el" autoplay muted loop style="display: none;"></video>
 
             <div class="speaker-header">
-                <div class="speaker-header-left" id="headerLeftZone"></div>
+                <div class="speaker-header-left" id="headerLeftZone">
+                    <!-- Logo Posisi: Kiri Atas -->
+                    <img src="" id="logoLeft" class="custom-logo-display" style="display: none;">
+                </div>
                 <div class="speaker-header-center" id="headerCenterZone">
+                    <!-- Logo Posisi: Tengah Atas (di atas Title) -->
+                    <img src="" id="logoTopCenter" class="custom-logo-display" style="display: none; margin-bottom: 6px;">
                     <div class="center-stage-title" id="displayCenterTitle">TIMER 1</div>
                 </div>
                 <div class="speaker-header-right" id="headerRightZone">
+                    <!-- Watermark di Pojok Kanan Atas -->
                     <span class="small-app-title">BCKSTGBOYS TIMER</span>
                 </div>
             </div>
@@ -1007,25 +1062,108 @@
                 <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
             </div>
 
+            <!-- 1. Warna & Ukuran Font -->
             <div class="setting-section">
-                <div class="section-title">🎨 Performer Display Customization</div>
+                <div class="section-title">🎨 Warna & Ukuran Tampilan</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Warna Title</label>
+                        <input type="color" id="pickerTitleColor" value="#ffffff" oninput="applySettingsLive()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Warna Timer</label>
+                        <input type="color" id="pickerTimerColor" value="#10b981" oninput="applySettingsLive()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Warna Pesan</label>
+                        <input type="color" id="pickerMessageColor" value="#ffffff" oninput="applySettingsLive()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ukuran Font Pesan (10px - 42px): <span id="valMsgSize">24px</span></label>
+                    <input type="range" id="rangeMsgSize" min="10" max="42" value="24" oninput="applySettingsLive()">
+                </div>
+            </div>
+
+            <!-- 2. Pemilihan Jenis Font -->
+            <div class="setting-section">
+                <div class="section-title">🔤 Pilihan Jenis Font</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                     <div class="form-group">
-                        <label class="form-label">Title Color</label>
-                        <input type="color" id="pickerTitleColor" value="#ffffff">
+                        <label class="form-label">Font Title</label>
+                        <select id="selectTitleFont" onchange="applySettingsLive()">
+                            <option value="var(--font-futura)">Futura Bold</option>
+                            <option value="var(--font-anton)">Anton / Impact</option>
+                            <option value="var(--font-calibri)">Calibri</option>
+                            <option value="var(--font-space)">Modern Sans</option>
+                            <option value="var(--font-times)">Times New Roman</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Timer Color</label>
-                        <input type="color" id="pickerTimerColor" value="#10b981">
+                        <label class="form-label">Font Timer</label>
+                        <select id="selectTimerFont" onchange="applySettingsLive()">
+                            <option value="var(--font-futura)">Futura Bold</option>
+                            <option value="var(--font-anton)">Anton / Impact</option>
+                            <option value="var(--font-beonco)">Monospace / Digital</option>
+                            <option value="var(--font-space)">Modern Sans</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Message Color</label>
-                        <input type="color" id="pickerMessageColor" value="#ffffff">
+                        <label class="form-label">Font Pesan</label>
+                        <select id="selectMessageFont" onchange="applySettingsLive()">
+                            <option value="var(--font-futura)">Futura Bold</option>
+                            <option value="var(--font-calibri)">Calibri</option>
+                            <option value="var(--font-space)">Modern Sans</option>
+                            <option value="var(--font-old-london)">Classic Serif</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <!-- 3. Pengaturan Logo & Posisi -->
+            <div class="setting-section">
+                <div class="section-title">🖼️ Logo & Posisi Logo</div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label class="form-label">URL Gambar Logo</label>
+                    <input type="text" id="inputLogoUrl" placeholder="https://contoh.com/logo.png" oninput="applySettingsLive()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Posisi Logo</label>
+                    <select id="selectLogoPos" onchange="applySettingsLive()">
+                        <option value="none">-- Sembunyikan Logo --</option>
+                        <option value="left">Atas Kiri</option>
+                        <option value="top">Tengah Atas (Di atas Title)</option>
+                        <option value="right">Kanan (Di atas Watermark)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 4. Background Foto atau Video -->
+            <div class="setting-section">
+                <div class="section-title">🎥 Background Foto / Video (URL)</div>
+                <div class="form-group">
+                    <label class="form-label">URL Gambar atau Video Background</label>
+                    <input type="text" id="inputBgUrl" placeholder="https://.../video.mp4 atau gambar.jpg" oninput="applySettingsLive()">
+                </div>
+            </div>
+
+            <!-- 5. Spacing / Jarak Elemen -->
+            <div class="setting-section">
+                <div class="section-title">📐 Pengaturan Jarak (Spacing)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="form-group">
+                        <label class="form-label">Jarak Title ke Timer: <span id="valSpaceTitleTimer">20px</span></label>
+                        <input type="range" id="rangeSpaceTitleTimer" min="0" max="80" value="20" oninput="applySettingsLive()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Jarak Timer ke Pesan: <span id="valSpaceTimerMsg">20px</span></label>
+                        <input type="range" id="rangeSpaceTimerMsg" min="0" max="80" value="20" oninput="applySettingsLive()">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
                 <button class="btn btn-secondary" onclick="closeSettingsModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveGlobalSettings()">Save Settings</button>
             </div>
@@ -1058,6 +1196,7 @@
         const controllerPanel = document.getElementById('controllerPanel');
         const presetBannerList = document.getElementById('presetBannerList');
         const displayBgImage = document.getElementById('displayBgImage');
+        const displayBgVideo = document.getElementById('displayBgVideo');
         const displayCenterTitle = document.getElementById('displayCenterTitle');
         const previewTitle = document.getElementById('previewTitle');
         const btnAudioToggle = document.getElementById('btnAudioToggle');
@@ -1070,12 +1209,16 @@
         const rundownContainer = document.getElementById('rundownContainer');
         const appHeader = document.getElementById('appHeader');
 
+        const logoLeft = document.getElementById('logoLeft');
+        const logoTopCenter = document.getElementById('logoTopCenter');
+        const headerRightZone = document.getElementById('headerRightZone');
+
         const summaryCurrentTime = document.getElementById('summaryCurrentTime');
         const summaryOverUnder = document.getElementById('summaryOverUnder');
         const summaryEndOfShow = document.getElementById('summaryEndOfShow');
         const summaryEstimated = document.getElementById('summaryEstimated');
 
-        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser dengan parameter ?mode=display, langsung ubah ke mode display & sembunyikan kontrol
+        // DETEKSI OTOMATIS: Jika dibuka sebagai output browser dengan parameter ?mode=display, langsung ubah ke mode display
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('mode') === 'display') {
@@ -1083,6 +1226,68 @@
                 switchView('display', null);
             }
         });
+
+        function applySettingsLive() {
+            // Warna
+            const tColor = document.getElementById('pickerTitleColor').value;
+            const timerColor = document.getElementById('pickerTimerColor').value;
+            const mColor = document.getElementById('pickerMessageColor').value;
+            document.documentElement.style.setProperty('--display-title-color', tColor);
+            document.documentElement.style.setProperty('--display-timer-color', timerColor);
+            document.documentElement.style.setProperty('--display-message-color', mColor);
+
+            // Ukuran Font Pesan
+            const msgSize = document.getElementById('rangeMsgSize').value + 'px';
+            document.getElementById('valMsgSize').innerText = msgSize;
+            document.documentElement.style.setProperty('--display-message-size', msgSize);
+
+            // Jenis Font
+            document.documentElement.style.setProperty('--active-title-font', document.getElementById('selectTitleFont').value);
+            document.documentElement.style.setProperty('--active-timer-font', document.getElementById('selectTimerFont').value);
+            document.documentElement.style.setProperty('--active-message-font', document.getElementById('selectMessageFont').value);
+
+            // Spacing
+            const tSpace = document.getElementById('rangeSpaceTitleTimer').value + 'px';
+            const mSpace = document.getElementById('rangeSpaceTimerMsg').value + 'px';
+            document.getElementById('valSpaceTitleTimer').innerText = tSpace;
+            document.getElementById('valSpaceTimerMsg').innerText = mSpace;
+            document.documentElement.style.setProperty('--spacing-title-timer', tSpace);
+            document.documentElement.style.setProperty('--spacing-timer-message', mSpace);
+
+            // Logo & Posisi
+            const logoUrl = document.getElementById('inputLogoUrl').value.trim();
+            const logoPos = document.getElementById('selectLogoPos').value;
+
+            logoLeft.style.display = 'none';
+            logoTopCenter.style.display = 'none';
+            headerRightZone.innerHTML = '<span class="small-app-title">BCKSTGBOYS TIMER</span>';
+
+            if (logoUrl && logoPos !== 'none') {
+                if (logoPos === 'left') {
+                    logoLeft.src = logoUrl;
+                    logoLeft.style.display = 'block';
+                } else if (logoPos === 'top') {
+                    logoTopCenter.src = logoUrl;
+                    logoTopCenter.style.display = 'block';
+                } else if (logoPos === 'right') {
+                    headerRightZone.innerHTML = `<img src="${logoUrl}" class="custom-logo-display" style="max-height:40px; margin-right:10px;"><span class="small-app-title">BCKSTGBOYS TIMER</span>`;
+                }
+            }
+
+            // Background Media (Foto / Video)
+            const bgUrl = document.getElementById('inputBgUrl').value.trim();
+            displayBgImage.style.display = 'none';
+            displayBgVideo.style.display = 'none';
+            if (bgUrl) {
+                if (bgUrl.endsWith('.mp4') || bgUrl.endsWith('.webm') || bgUrl.includes('video')) {
+                    displayBgVideo.src = bgUrl;
+                    displayBgVideo.style.display = 'block';
+                } else {
+                    displayBgImage.src = bgUrl;
+                    displayBgImage.style.display = 'block';
+                }
+            }
+        }
 
         function updateCharCounter() {
             if (inputMessageArea.value.length > 300) {
@@ -1113,7 +1318,6 @@
         }
 
         function openOutputInBrowser() {
-            // Membuka link publik khusus mode display full screen di window baru
             window.open(getOutputUrl(), '_blank', 'width=1920,height=1080,menubar=no,toolbar=no,location=no');
         }
 
@@ -1121,13 +1325,7 @@
         function closeSettingsModal() { settingsModal.classList.remove('active'); }
 
         function saveGlobalSettings() {
-            const tColor = document.getElementById('pickerTitleColor').value;
-            const timerColor = document.getElementById('pickerTimerColor').value;
-            const mColor = document.getElementById('pickerMessageColor').value;
-
-            document.documentElement.style.setProperty('--display-title-color', tColor);
-            document.documentElement.style.setProperty('--display-timer-color', timerColor);
-            document.documentElement.style.setProperty('--display-message-color', mColor);
+            applySettingsLive();
             closeSettingsModal();
         }
 
