@@ -1203,7 +1203,6 @@
         let uploadedBgType = "image";
 
         const broadcastChannel = new BroadcastChannel('bckstg_timer_channel');
-
         const PUBLIC_BASE_URL = "https://krisnaforwork.github.io/bckstgboys-timer/";
 
         const timerDisplay = document.getElementById('timerDisplay');
@@ -1242,7 +1241,6 @@
 
         const isDisplayMode = new URLSearchParams(window.location.search).get('mode') === 'display';
 
-        // DETEKSI MODE OUTPUT
         window.addEventListener('DOMContentLoaded', () => {
             if (isDisplayMode) {
                 if (appHeader) appHeader.style.display = 'none';
@@ -1252,9 +1250,8 @@
             loadSettingsFromStorage();
         });
 
-        // Broadcast & Polling Sync (Mendukung Real-Time antar Tab Output)
         function broadcastState() {
-            if (isDisplayMode) return; // Tab display hanya menerima, tidak mengirim balik
+            if (isDisplayMode) return;
             const state = {
                 rundownTimers,
                 activeTimerId,
@@ -1277,8 +1274,10 @@
                     bgType: uploadedBgType
                 }
             };
-            broadcastChannel.postMessage(state);
-            localStorage.setItem('bckstg_live_sync', JSON.stringify(state));
+            try {
+                broadcastChannel.postMessage(state);
+                localStorage.setItem('bckstg_live_sync', JSON.stringify(state));
+            } catch(e) {}
         }
 
         broadcastChannel.onmessage = (event) => {
@@ -1293,14 +1292,41 @@
             }
         });
 
-        // Polling otomatis setiap 200ms khusus untuk tab display agar sinkron mutlak
-        if (isDisplayMode) {
-            setInterval(() => {
+        // Polling Sync untuk tab Display (Setiap 100ms agar instan & mandiri berjalan)
+        setInterval(() => {
+            if (isDisplayMode) {
                 const raw = localStorage.getItem('bckstg_live_sync');
                 if (raw) {
                     try { applySyncedState(JSON.parse(raw)); } catch(e){}
                 }
-            }, 200);
+            }
+            // Jalankan hitung mundur secara lokal di tab Display jika ada yang running
+            const anyRunning = rundownTimers.some(t => t.isRunning);
+            if (anyRunning) {
+                rundownTimers.forEach(t => {
+                    if (t.isRunning) {
+                        t.remainingSeconds--;
+                        if (t.remainingSeconds === 0) playBeep(440, 0.5);
+                    }
+                });
+                updateActiveDisplay();
+                if (!isDisplayMode) renderRundown();
+            }
+        }, 1000);
+
+        // Polling baca state cepat khusus Display (tiap 100ms) tanpa tunggu jeda 1 detik
+        if (isDisplayMode) {
+            setInterval(() => {
+                const raw = localStorage.getItem('bckstg_live_sync');
+                if (raw) {
+                    try {
+                        const data = JSON.parse(raw);
+                        rundownTimers = data.rundownTimers;
+                        activeTimerId = data.activeTimerId;
+                        updateActiveDisplay();
+                    } catch(e){}
+                }
+            }, 100);
         }
 
         function applySyncedState(data) {
@@ -1522,26 +1548,27 @@
             const now = new Date();
             let timeStr = now.toLocaleTimeString();
             todDisplay.innerText = "TOD: " + timeStr;
-            summaryCurrentTime.innerText = timeStr;
+            if (!isDisplayMode) {
+                summaryCurrentTime.innerText = timeStr;
+                let totalRemainingSecs = rundownTimers.reduce((acc, t) => acc + t.remainingSeconds, 0);
+                let finishDate = new Date(now.getTime() + totalRemainingSecs * 1000);
+                let finishStr = finishDate.toLocaleTimeString();
 
-            let totalRemainingSecs = rundownTimers.reduce((acc, t) => acc + t.remainingSeconds, 0);
-            let finishDate = new Date(now.getTime() + totalRemainingSecs * 1000);
-            let finishStr = finishDate.toLocaleTimeString();
+                summaryEndOfShow.innerText = finishStr;
+                summaryEstimated.innerText = finishStr;
 
-            summaryEndOfShow.innerText = finishStr;
-            summaryEstimated.innerText = finishStr;
-
-            let totalOriginalSecs = rundownTimers.reduce((acc, t) => acc + t.totalSeconds, 0);
-            let diffSecs = totalRemainingSecs - totalOriginalSecs;
-            if (Math.abs(diffSecs) < 5) {
-                summaryOverUnder.innerText = "ON TIME";
-                summaryOverUnder.className = "status-tag-on-time";
-            } else if (diffSecs > 0) {
-                summaryOverUnder.innerText = `+${Math.floor(diffSecs/60)}m OVER`;
-                summaryOverUnder.className = "status-tag-over";
-            } else {
-                summaryOverUnder.innerText = `${Math.floor(Math.abs(diffSecs)/60)}m UNDER`;
-                summaryOverUnder.className = "status-tag-under";
+                let totalOriginalSecs = rundownTimers.reduce((acc, t) => acc + t.totalSeconds, 0);
+                let diffSecs = totalRemainingSecs - totalOriginalSecs;
+                if (Math.abs(diffSecs) < 5) {
+                    summaryOverUnder.innerText = "ON TIME";
+                    summaryOverUnder.className = "status-tag-on-time";
+                } else if (diffSecs > 0) {
+                    summaryOverUnder.innerText = `+${Math.floor(diffSecs/60)}m OVER`;
+                    summaryOverUnder.className = "status-tag-over";
+                } else {
+                    summaryOverUnder.innerText = `${Math.floor(Math.abs(diffSecs)/60)}m UNDER`;
+                    summaryOverUnder.className = "status-tag-under";
+                }
             }
         }
         setInterval(updateTOD, 1000);
@@ -1618,7 +1645,7 @@
             const t = rundownTimers.find(x => x.id === id);
             if (t) {
                 t.isRunning = !t.isRunning;
-                onAirBadge.classList.toggle('active', t.isRunning);
+                if (!isDisplayMode) onAirBadge.classList.toggle('active', t.isRunning);
                 checkGlobalInterval();
                 renderRundown();
                 broadcastState();
@@ -1630,7 +1657,7 @@
             const t = rundownTimers.find(x => x.id === activeTimerId);
             if (t) { 
                 t.isRunning = false; 
-                onAirBadge.classList.remove('active'); 
+                if (!isDisplayMode) onAirBadge.classList.remove('active'); 
                 checkGlobalInterval(); 
                 renderRundown(); 
                 broadcastState();
@@ -1641,7 +1668,7 @@
             if (t) {
                 t.isRunning = false;
                 t.remainingSeconds = t.totalSeconds;
-                onAirBadge.classList.remove('active');
+                if (!isDisplayMode) onAirBadge.classList.remove('active');
                 checkGlobalInterval();
                 renderRundown();
                 broadcastState();
@@ -1681,21 +1708,29 @@
             if (!t) return;
             const formattedStr = formatTime(t.remainingSeconds);
             timerDisplay.innerText = formattedStr;
-            previewTimerDisplay.innerText = formattedStr;
-            previewSubClock.innerText = `${formattedStr}.0`;
+            if (!isDisplayMode) {
+                previewTimerDisplay.innerText = formattedStr;
+                previewSubClock.innerText = `${formattedStr}.0`;
+            }
             displayCenterTitle.innerText = t.title;
-            previewTitle.innerText = t.title;
+            if (!isDisplayMode) previewTitle.innerText = t.title;
 
             const warningSecs = (t.warningMinutes || 3) * 60;
             timerDisplay.classList.remove('status-warning', 'status-danger');
-            previewTimerDisplay.classList.remove('status-warning', 'status-danger');
+            if (!isDisplayMode) previewTimerDisplay.classList.remove('status-warning', 'status-danger');
+
             if (t.remainingSeconds <= 60) {
                 timerDisplay.classList.add('status-danger');
+                if (!isDisplayMode) previewTimerDisplay.classList.add('status-danger');
             } else if (t.remainingSeconds <= warningSecs) {
                 timerDisplay.classList.add('status-warning');
+                if (!isDisplayMode) previewTimerDisplay.classList.add('status-warning');
             }
-            const progressPct = Math.max(0, Math.min(100, (t.remainingSeconds / (t.totalSeconds || 1)) * 100));
-            progressBarFill.style.width = `${progressPct}%`;
+            
+            if (!isDisplayMode) {
+                const progressPct = Math.max(0, Math.min(100, (t.remainingSeconds / (t.totalSeconds || 1)) * 100));
+                progressBarFill.style.width = `${progressPct}%`;
+            }
         }
 
         function switchView(mode, btnEl) {
